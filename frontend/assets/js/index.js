@@ -15,13 +15,6 @@ $(function () {
 		console.log(reason)
 	})
 
-	// $(".app").load("nickname.html", function () {
-	// 	$(".btn-submit").click(function (e) {
-	// 		e.preventDefault()
-	// 		localStorage.setItem("nickname", $("#nickname").val())
-
-	// })
-
 	$(".app").load("room.html", function () {
 		$(".create-room").click(function () {
 			socket.emit("create_room", { nickname: "home" })
