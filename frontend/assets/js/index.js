@@ -1,6 +1,6 @@
 $(function () {
 	const io = window.io
-	const socket = io("ws://localhost:3000/", {
+	const socket = io("ws://localhost:8000/", {
 		transports: ["websocket"],
 	})
 	socket.on("connect", () => {
