@@ -1,43 +1,47 @@
 $(function () {
 	const io = window.io
-	const socket = io.connect("ws://10.23.114.69:3000/", {
+	const socket = io("ws://localhost:3000/", {
 		transports: ["websocket"],
 	})
 	socket.on("connect", () => {
 		console.log("Connected")
 	})
 
+	socket.on("connect_error", (error) => {
+		console.log(error)
+	})
+
 	socket.on("disconnect", (reason) => {
 		console.log(reason)
 	})
 
-	$(".app").load("nickname.html", function () {
-		$(".btn-submit").click(function (e) {
-			e.preventDefault()
-			localStorage.setItem("nickname", $("#nickname").val())
+	// $(".app").load("nickname.html", function () {
+	// 	$(".btn-submit").click(function (e) {
+	// 		e.preventDefault()
+	// 		localStorage.setItem("nickname", $("#nickname").val())
 
-			$(".app").load("room.html", function () {
-				$(".create-room").click(function () {
-					socket.emit("create_room", { nickname: "home" })
-					window.localStorage.setItem("status", "home")
-					toMatch()
-				})
+	// })
 
-				$(".btn-join").click(function () {
-					socket.emit("join_room", {
-						room_number: $("#room_id").val(),
-						nickname: "visitor",
-					})
-					window.localStorage.setItem("status", "visitor")
-					toMatch()
-				})
+	$(".app").load("room.html", function () {
+		$(".create-room").click(function () {
+			socket.emit("create_room", { nickname: "home" })
+			window.localStorage.setItem("status", "home")
+			toMatch()
+		})
+
+		$(".btn-join").click(function () {
+			socket.emit("join_room", {
+				room_number: $("#room_id").val(),
+				nickname: "visitor",
 			})
+			window.localStorage.setItem("status", "visitor")
+			toMatch()
 		})
 	})
 
 	// MATCH
-	const toMatch = () =>
-		$(".app").load("match.html", () => {
+	const toMatch = () => {
+		$(".app").load("match.html", function () {
 			let option = `
                 <span class='choice-title'>Choose wisely</span>
                 <div class='choices'>
@@ -57,6 +61,7 @@ $(function () {
             `
 
 			socket.on("emit_room", (e) => {
+				console.log(e)
 				if (
 					window.localStorage.getItem("status") === "home" &&
 					!e?.home?.state
@@ -94,4 +99,5 @@ $(function () {
 				})
 			})
 		})
+	}
 })
