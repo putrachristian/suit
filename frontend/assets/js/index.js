@@ -3,6 +3,7 @@ $(function () {
 	const socket = io("ws://localhost:8000/", {
 		transports: ["websocket"],
 	})
+
 	socket.on("connect", () => {
 		console.log("Connected")
 	})
@@ -15,26 +16,34 @@ $(function () {
 		console.log(reason)
 	})
 
-	$(".app").load("room.html", function () {
-		$(".create-room").click(function () {
-			socket.emit("create_room", { nickname: "home" })
-			window.localStorage.setItem("status", "home")
-			toMatch()
-		})
-
-		$(".btn-join").click(function () {
-			socket.emit("join_room", {
-				room_number: $("#room_id").val(),
-				nickname: "visitor",
+	const roomPage = () => {
+		$(".app").load("room.html", function () {
+			$(".create-room").click(function () {
+				socket.emit("create_room", { nickname: "home" })
+				window.localStorage.setItem("status", "home")
+				toMatch()
 			})
-			window.localStorage.setItem("status", "visitor")
-			toMatch()
+
+			$(".btn-join").click(function () {
+				socket.emit("join_room", {
+					room_number: $("#room_id").val(),
+					nickname: "visitor",
+				})
+				window.localStorage.setItem("status", "visitor")
+				toMatch()
+			})
 		})
-	})
+	}
+	roomPage()
 
 	// MATCH
 	const toMatch = () => {
 		$(".app").load("match.html", function () {
+			$(".back").click(function (e) {
+				e.preventDefault()
+				roomPage()
+			})
+
 			let option = `
                 <span class='choice-title'>Choose wisely</span>
                 <div class='choices'>
